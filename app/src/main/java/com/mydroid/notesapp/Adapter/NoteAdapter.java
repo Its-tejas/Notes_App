@@ -46,9 +46,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         holder.noteTitle.setText(model.getTitle());
         holder.noteText.setText(model.getText());
 
-        // Code for do some action
-
-
         holder.noteCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,13 +73,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
                         model.id = UPDATED_ID;
                         model.title = UPDATED_TITLE;
                         model.text = UPDATED_TEXT;
-                        int isUpadateSuccess = helper.updateNote(model);
-                        if (isUpadateSuccess == 1) {
-                            Toast.makeText(context, "Note update successfully", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                            updateRecyclerViewData();
-                        } else {
-                            Toast.makeText(context, "Note Deletion Failed", Toast.LENGTH_SHORT).show();
+
+                        if (!UPDATED_TITLE.equals("") && !UPDATED_TEXT.equals("")) {
+                            int isUpadateSuccess = helper.updateNote(model);
+                            if (isUpadateSuccess == 1) {
+                                Toast.makeText(context, "Note update successfully", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                                updateRecyclerViewData();
+                            } else {
+                                Toast.makeText(context, "Note Deletion Failed", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });

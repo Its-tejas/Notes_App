@@ -2,6 +2,7 @@ package com.mydroid.notesapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,7 +66,6 @@ public class LogInActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             // User is signed in, navigate to NoteListActivity
-//            IntentPasser(new NotesListActivity());
             Intent intent = new Intent(LogInActivity.this, NotesListActivity.class);
             startActivity(intent);
         }
@@ -73,7 +73,12 @@ public class LogInActivity extends AppCompatActivity {
         btnGoogleSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//     Handle Google sign-in button click
+                // SharedPreferences is used to set and know app opened 1st time or not
+                SharedPreferences SP = getSharedPreferences("login", MODE_PRIVATE);
+                SharedPreferences.Editor editor = SP.edit();
+                editor.putBoolean("isNewUser",true);
+                editor.apply();
+
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }

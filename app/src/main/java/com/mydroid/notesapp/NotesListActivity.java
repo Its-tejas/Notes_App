@@ -3,6 +3,7 @@ package com.mydroid.notesapp;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,24 +39,27 @@ public class NotesListActivity extends AppCompatActivity {
 
 
         auth = FirebaseAuth.getInstance();
-
         helper = new DBHelper(this);
 
-        // code for write data into database
-        String temp = "SQLite is another data storage available in Android where we can store data in the user’s device and can use it any time when required. In this article, we will take a ";
-        String temp2 = "SQLite is another data storage available in Android where we can store data in the user’s device and can use it any time when required. In this article, we will take a look at creating an SQLite database in Android app and adding data to that database in the Android app. This is a series of 4 articles in which we are going to perform the basic CRUD (Create, Read, Update, and Delete) operation with SQLite Database in Android. We are going to cover the following 4 articles in this series:";
-//            helper.addNote("First", temp);
-//            helper.addNote("Second", "abcd");
-//            helper.addNote("Third", "1");
-//            helper.addNote("Fourth", temp2);
-//            helper.addNote("Fifth", "sytfdwdeqjfcdawefvkawefcvksadgfvkusdagfyuksdgfkyigweasiyfiweyifgtewytgfewfg");
+        // SharedPreferences is used to set and know app opened 1st time or not
+        SharedPreferences SP = getSharedPreferences("login", MODE_PRIVATE);
+        SharedPreferences.Editor editor = SP.edit();        // Editor is used to set value in SharedPreferences
+        Boolean isNewUser = SP.getBoolean("isNewUser", false);
 
+        if (isNewUser == true)
+        {
+            // code for write data into database only for 1st time
+            helper.addNote("Welcome", "Thank you for using this app");
+            helper.addNote("App Features", "1. This Note app do not store any type of note data\n2. This app is very simple to use");
+            helper.addNote("Enjoy", "Create note and enjoy App");
 
-        // code for fetch data
+            editor.putBoolean("isNewUser", false);
+            editor.apply();
+        }
+
+        // code for fetch data into arraylist
         arrayNote = helper.getNote();
-
         noteAdapter = new NoteAdapter(this, arrayNote);
-//        noteAdapter = new NoteAdapter(this);
 
         int spancount = 2;      // no. of columns in grid
         binding.recyclerView.setAdapter(noteAdapter);
@@ -88,14 +92,20 @@ public class NotesListActivity extends AppCompatActivity {
                         String TITLE = titleofNote.getText().toString();
                         String TEXT = textofNote.getText().toString();
 
-                        int res = helper.addNote(TITLE, TEXT);
-                        if (res == 1) {
-                            Toast.makeText(NotesListActivity.this, "Note Created Successfully", Toast.LENGTH_SHORT).show();
-                            updateRecyclerViewData();
-                            dialog.dismiss();
+                        if (!TITLE.equals("") && !TEXT.equals("")) {
+                            int res = helper.addNote(TITLE, TEXT);
+                            if (res == 1) {
+                                Toast.makeText(NotesListActivity.this, "Note Created Successfully", Toast.LENGTH_SHORT).show();
+                                updateRecyclerViewData();
+                                dialog.dismiss();
 
-                        } else {
-                            Toast.makeText(NotesListActivity.this, "Note Creation Failed", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(NotesListActivity.this, "Note Creation Failed", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(NotesListActivity.this, "Please enter some text", Toast.LENGTH_SHORT).show();
                         }
 
                     }
